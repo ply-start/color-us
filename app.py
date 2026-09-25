@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import html
+import json
 from io import BytesIO
 
 import streamlit as st
+from streamlit.components.v1 import html as components_html
 
 from database import SupabaseNotConfigured, app_base_url, create_invite, download_original, get_invite
 from image_utils import (
@@ -162,8 +165,133 @@ def render_a_flow() -> None:
 
     if st.session_state.get("share_link"):
         st.success("邀请链接已生成。把它发给对方，对方会基于同一张原图独立调色。")
-        st.markdown(f'<div class="share-link">{st.session_state.share_link}</div>', unsafe_allow_html=True)
+        render_invite_share(st.session_state.share_link)
     st.markdown("</div>", unsafe_allow_html=True)
+
+
+def render_invite_share(link: str) -> None:
+    safe_link = html.escape(link)
+    link_json = json.dumps(link, ensure_ascii=False)
+    components_html(
+        f"""
+        <div class="invite-box">
+          <button class="primary-action" id="copy-link" type="button">复制邀请链接</button>
+          <button class="secondary-action" id="share-link" type="button">分享给 TA</button>
+          <div class="status" id="share-status" aria-live="polite"></div>
+          <label class="manual-label" id="manual-label" for="manual-link">如果复制失败，请长按选择完整链接</label>
+          <textarea id="manual-link" readonly>{safe_link}</textarea>
+        </div>
+        <script>
+          const inviteLink = {link_json};
+          const copyButton = document.getElementById("copy-link");
+          const shareButton = document.getElementById("share-link");
+          const status = document.getElementById("share-status");
+          const manualLabel = document.getElementById("manual-label");
+          const manualLink = document.getElementById("manual-link");
+
+          if (!navigator.share) {{
+            shareButton.style.display = "none";
+          }}
+
+          function showManualLink(message) {{
+            status.textContent = message;
+            manualLabel.classList.add("visible");
+            manualLink.classList.add("visible");
+            manualLink.focus();
+            manualLink.select();
+          }}
+
+          copyButton.addEventListener("click", async () => {{
+            try {{
+              if (!navigator.clipboard || !window.isSecureContext) {{
+                throw new Error("Clipboard API is unavailable");
+              }}
+              await navigator.clipboard.writeText(inviteLink);
+              status.textContent = "已复制，快发给 TA 吧 ♡";
+              manualLabel.classList.remove("visible");
+              manualLink.classList.remove("visible");
+            }} catch (error) {{
+              showManualLink("复制失败，请手动长按选择下方链接。");
+            }}
+          }});
+
+          shareButton.addEventListener("click", async () => {{
+            try {{
+              await navigator.share({{
+                title: "Color Us",
+                text: "我想和你一起为同一张照片调色。",
+                url: inviteLink,
+              }});
+            }} catch (error) {{
+              if (error.name !== "AbortError") {{
+                showManualLink("分享失败，请手动长按选择下方链接。");
+              }}
+            }}
+          }});
+        </script>
+        <style>
+          .invite-box {{
+            font-family: Georgia, "Times New Roman", "Microsoft YaHei", serif;
+            color: #5c463d;
+            padding-top: 2px;
+          }}
+          button {{
+            -webkit-tap-highlight-color: transparent;
+            border: 0;
+            border-radius: 999px;
+            cursor: pointer;
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: .02em;
+            margin: 10px 0;
+            min-height: 48px;
+            width: 100%;
+          }}
+          .primary-action {{
+            background: linear-gradient(135deg, #2f2723, #8c5d4d);
+            box-shadow: 0 14px 28px rgba(87, 48, 35, .18);
+            color: #fff8ef;
+          }}
+          .secondary-action {{
+            background: rgba(246, 232, 221, .9);
+            border: 1px solid rgba(93, 63, 49, .16);
+            color: #5c463d;
+          }}
+          .status {{
+            color: #8a5f4f;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 24px;
+            padding: 4px 2px 8px;
+            text-align: center;
+          }}
+          .manual-label {{
+            color: #8a7267;
+            display: none;
+            font-size: 13px;
+            line-height: 1.55;
+            margin: 2px 0 7px;
+          }}
+          .manual-label.visible {{ display: block; }}
+          textarea {{
+            background: #f6e8dd;
+            border: 1px dashed rgba(93, 63, 49, .28);
+            border-radius: 18px;
+            box-sizing: border-box;
+            color: #5c463d;
+            display: none;
+            font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            min-height: 88px;
+            padding: 12px 14px;
+            resize: none;
+            width: 100%;
+          }}
+          textarea.visible {{ display: block; }}
+        </style>
+        """,
+        height=250,
+    )
 
 
 def render_b_flow(token: str) -> None:
