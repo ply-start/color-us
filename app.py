@@ -40,9 +40,20 @@ CSS = """
   }
   .hero { min-height: 78vh; display: flex; flex-direction: column; justify-content: center; }
   .eyebrow { color: #9c7463; font-size: .82rem; text-transform: uppercase; letter-spacing: .18em; }
-  .title { font-size: 3.6rem; line-height: .9; margin: .6rem 0 .5rem; font-weight: 700; }
-  .subtitle { font-size: 1.08rem; color: #5d4a42; margin-bottom: 2.5rem; }
-  .poem { font-size: 1.12rem; line-height: 2; color: #69564d; margin: 1.8rem 0 2.3rem; }
+  .title { font-size: 3.6rem; line-height: .9; margin: .6rem 0 .7rem; font-weight: 700; }
+  .subtitle { font-size: 1.1rem; color: #5d4a42; line-height: 1.65; margin-bottom: 1.7rem; }
+  .poem { font-size: 1.04rem; line-height: 1.95; color: #69564d; margin: 1.3rem 0 1.8rem; }
+  .how-title { margin: 1.4rem 0 .85rem; color: #3b302a; font-size: 1.08rem; font-weight: 700; }
+  .steps { display: grid; gap: .72rem; margin: .2rem 0 1.4rem; }
+  .step {
+    display: grid; grid-template-columns: 46px 1fr; gap: .8rem; align-items: start;
+    padding: .86rem .92rem; border-radius: 22px;
+    background: rgba(247, 232, 221, .62); border: 1px solid rgba(111, 78, 62, .1);
+  }
+  .step-no { color: #b17b65; font-size: .84rem; letter-spacing: .08em; font-weight: 700; }
+  .step-title { color: #3e312b; font-size: .98rem; font-weight: 700; margin-bottom: .25rem; }
+  .step-text { color: #715c52; font-size: .92rem; line-height: 1.65; }
+  .ending { color: #7e655a; font-size: 1rem; line-height: 1.85; margin: .9rem 0 .3rem; }
   .hint { color: #8a7267; font-size: .92rem; line-height: 1.7; }
   .share-link {
     word-break: break-all; padding: 14px 16px; border-radius: 18px;
@@ -79,8 +90,40 @@ def render_a_flow() -> None:
             <div class="hero">
               <div class="eyebrow">A two-person photo ritual</div>
               <div class="title">Color<br>Us</div>
-              <div class="subtitle">你把我的世界染成了什么颜色？</div>
-              <div class="poem">同一张风景，<br>因为你的存在，<br>有了不一样的颜色。</div>
+              <div class="subtitle">两个人，一张照片，一种只属于你们的颜色。</div>
+              <div class="poem">你眼中的世界，是什么颜色的？<br><br>邀请一个人，<br>与你一起为同一张照片调色。<br><br>你们不必看见彼此的选择，<br>却能在最后拥有一种共同的颜色。</div>
+              <div class="how-title">怎么玩</div>
+              <div class="steps">
+                <div class="step">
+                  <div class="step-no">01</div>
+                  <div>
+                    <div class="step-title">上传一张照片</div>
+                    <div class="step-text">选择一张你喜欢的照片，<br>调出你眼中的颜色。</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-no">02</div>
+                  <div>
+                    <div class="step-title">邀请一个人</div>
+                    <div class="step-text">生成专属链接，<br>把这张照片交给想一起玩的人。</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-no">03</div>
+                  <div>
+                    <div class="step-title">等待另一种颜色</div>
+                    <div class="step-text">TA 将看到同一张原图，<br>独立调出属于自己的颜色。</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-no">04</div>
+                  <div>
+                    <div class="step-title">保存我们的颜色</div>
+                    <div class="step-text">当两种颜色相遇，<br>就会生成一张属于你们的颜色卡片。</div>
+                  </div>
+                </div>
+              </div>
+              <div class="ending">同一片风景，<br>也可以有两种不同的心情。</div>
             </div>
             """,
             unsafe_allow_html=True,
